@@ -1,67 +1,62 @@
-function minDate() {
-    const today = new Date();
-    return new Date(today.getFullYear() - 55, today.getMonth(), today.getDate()).toISOString().split('T')[0];
-}
+let userForm = document.getElementById("user-form");
 
-function maxDate() {
-    const today = new Date();
-    return new Date(today.getFullYear() - 18, today.getMonth(), today.getDate()).toISOString().split('T')[0];
-}
-
-const dobInput = document.getElementById('dob');
-dobInput.setAttribute('min', minDate());
-dobInput.setAttribute('max', maxDate());
-
-let userForm = document.getElementById("userForm");
-
-const getEntries = () => {
-    let entries = localStorage.getItem("userEntries");
-    if (entries) {
+const retrieveEntries = () => {
+    let entries = localStorage.getItem("user-entries");
+    if(entries) {
         entries = JSON.parse(entries);
     } else {
         entries = [];
     }
     return entries;
 }
+let userEntries = retrieveEntries();
 
-let userEntries = getEntries();
-
-const dispEntries = () => {
-    const entries = getEntries();
+const displayEntries = () => {
+    const entries = retrieveEntries();
     const tableEntries = entries.map((entry) => {
-        const name = `<td class="bor">${entry.name}</td>`;
-        const email = `<td class="bor">${entry.email}</td>`;
-        const password = `<td class="bor">${entry.password}</td>`;
-        const dateOfBirth = `<td class="bor">${entry.dob}</td>`; 
-        const atnc = `<td class="bor">${entry.atnc}</td>`;
+        const NameCell = `<td class='border px-4 py-2'>${entry.name}</td>`;
+        const EmailCell = `<td class='border px-4 py-2'>${entry.email}</td>`; 
+        const PasswordCell = `<td class='border px-4 py-2'>${entry.password}</td>`
+        const DobCell = `<td class='border px-4 py-2'>${entry.dob}</td>`;
+        const AcceptTermsCell = `<td class='border px-4 py-2'>${entry.acceptedTermsAndconditions}</td>`;
 
-        const row = `<tr>${name} ${email} ${password} ${dateOfBirth} ${atnc}</tr>`;
+        const row  = `<tr>${NameCell} ${EmailCell} ${PasswordCell} ${DobCell} ${AcceptTermsCell}</tr>`;
         return row;
+
     }).join("\n");
 
-    const table = `<h1>Entries</h1><table class="table"><tr class="bor"><th class="bor">Name</th><th class="bor">Email</th><th class="bor">Password</th><th class="bor">Dob</th><th class="bor">Accepted terms?</th></tr>${tableEntries}</table>`;
+    const table = `<table class="table-auto w-full"><tr>
 
-    let details = document.getElementById("tableView");
-    details.innerHTML = table;
+    <th class="px-4 py-2">Name</th>
+    <th class="px-4 py-2">Email</th>
+    <th class="px-4 py-2">Password</th>
+    <th class="px-4 py-2">dob</th>
+    <th class="px-4 py-2">accepted terms?</th>
+</tr>${tableEntries} </table>`;
+
+let details = document.getElementById("user-entries");
+details.innerHTML = table;
+
 }
-
-dispEntries();
-
-const formSubmit = (event) => {
+const saveUserForm = (event) => {
     event.preventDefault();
     const name = document.getElementById("name").value;
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
-    const dateOfBirth = document.getElementById("dob").value; 
-    const atnc = document.getElementById("atnc").checked;
-
+    const dob = document.getElementById("dob").value;
+    const acceptedTermsAndconditions = document.getElementById("acceptTerms").checked;
     const entry = {
-        name, email, password, dob: dateOfBirth, atnc 
+        name,
+        email,
+        password,
+        dob,
+        acceptedTermsAndconditions
     }
-
     userEntries.push(entry);
-    localStorage.setItem("userEntries", JSON.stringify(userEntries)); 
-    dispEntries();
-}
+    
+    localStorage.setItem("user-entries", JSON.stringify(userEntries));
+    displayEntries();
 
-userForm.addEventListener("submit", formSubmit);
+}
+userForm.addEventListener("submit", saveUserForm);
+displayEntries();
